@@ -7,7 +7,7 @@ import "./ChainBattles.sol";
 import "./Authentication.sol";
 
 contract SocialMedia is ERC721, Ownable {
-    address owner;
+    address public contractOwner;
 
     // Define events for tracking actions
     event NFTCreated(uint256 tokenId, address owner);
@@ -40,7 +40,6 @@ contract SocialMedia is ERC721, Ownable {
     ChainBattles private _chainBattles;
 
     constructor() ERC721("SocialMediaNFT", "SMNFT") {
-        owner = msg.sender;
         // Initialize token ID counter
         _tokenIdCounter = 1;
         _chainBattles = new ChainBattles();
@@ -87,12 +86,15 @@ contract SocialMedia is ERC721, Ownable {
 
     function createGroup(
         uint256 _groupId,
-        string memory _groupName
+        string memory _groupName,
+        string memory _groupDetails
     ) external onlyOwner {
-        _groups[_groupId] = Group(_groupName);
+        _groups[_groupId] = Group(_groupName, _groupDetails);
     }
 
-    function getGroup(uint256 _groupId) external view returns (string memory) {
+    function getGroup(
+        uint256 _groupId
+    ) external view returns (string memory, string memory) {
         return (_groups[_groupId].groupName, _groups[_groupId].details);
     }
 
@@ -100,13 +102,6 @@ contract SocialMedia is ERC721, Ownable {
         emit CommentAdded(_tokenId, msg.sender, _comment);
     }
 
-    // Implement gasless transaction mechanism (you may use meta-transactions)
-    // This is left as an exercise for the developer, as it requires additional context and design decisions.
-
-    // Additional features and functions can be added based on your requirements
-    // ...
-
-    // OnlyOwner function to transfer ownership of ChainBattles contract
     function transferChainBattlesOwnership(
         address _newOwner
     ) external onlyOwner {
